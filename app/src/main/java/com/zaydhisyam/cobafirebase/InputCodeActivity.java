@@ -6,10 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.view.KeyEvent;
+import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -49,13 +49,15 @@ public class InputCodeActivity extends AppCompatActivity {
 
         verification_id = getIntent().getStringExtra(EXTRA_VERF_ID);
 
-        et_input_code.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        et_input_code.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (start == 5) {
                     //hide keyboard
-                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    InputMethodManager imm = (InputMethodManager) et_input_code.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(et_input_code.getWindowToken(), 0);
 
                     //get input text
                     String code = et_input_code.getText().toString();
@@ -63,10 +65,10 @@ public class InputCodeActivity extends AppCompatActivity {
                         et_input_code.setError(getString(R.string.err_empty_field));
                     else
                         do_sign_in(verification_id, code);
-                    return true;
                 }
-                return false;
             }
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
 
     }
@@ -99,8 +101,10 @@ public class InputCodeActivity extends AppCompatActivity {
                             startActivity(new Intent(InputCodeActivity.this, MainActivity.class));
                         }
                         else {
-                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException)
-                                et_input_code.setError(getString(R.string.err_empty_field));
+                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                Toast.makeText(InputCodeActivity.this, R.string.err_wrong_code, Toast.LENGTH_SHORT).show();
+                                et_input_code.getText().clear();
+                            }
                         }
                         stop_loading();
                     }
