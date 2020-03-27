@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "380936292909",
+    "firebase_url": "https://coba-firebase-17f06.firebaseio.com",
+    "project_id": "coba-firebase-17f06",
+    "storage_bucket": "coba-firebase-17f06.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380936292909:android:e919bc2b3b00ed3be746a4",
+        "android_client_info": {
+          "package_name": "com.zaydhisyam.cobafirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380936292909-tult51aj4823v2118pvplrhpe48u8eaq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6Xorl6jeCJje7xYa3mrYaz1AAWFdDOIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380936292909-tult51aj4823v2118pvplrhpe48u8eaq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

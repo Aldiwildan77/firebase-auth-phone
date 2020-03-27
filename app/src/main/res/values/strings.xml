@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Coba Firebase</string>
+    <string name="btn_input_number">submit</string>
+    <string name="hint_enter_number">enter your phone number</string>
+    <string name="err_empty_field">it cant be empty</string>
+    <string name="tv_loading">loading</string>
+    <string name="actionbar_input_number">Verifikasi Nomor HP</string>
+</resources>
