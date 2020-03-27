@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -31,7 +32,6 @@ public class InputNumberActivity extends AppCompatActivity {
     private ProgressBar progress_bar;
     private TextView tv_loading;
 
-    private FirebaseAuth firebaseAuth;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks verifyPhoneNumber;
 
     @Override
@@ -40,23 +40,26 @@ public class InputNumberActivity extends AppCompatActivity {
         setContentView(R.layout.activity_input_number);
         set_ui();
 
-        firebaseAuth = FirebaseAuth.getInstance();
         verifyPhoneNumber = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                //automatically, based on providers
+                //instant verification, based on providers.
+                // cant detect verification without user action
                 stop_loading();
             }
 
             @Override
             public void onVerificationFailed(@NonNull FirebaseException e) {
-                Toast.makeText(InputNumberActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                 stop_loading();
+                Toast.makeText(InputNumberActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
-            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            public void onCodeSent(@NonNull String verification_id, @NonNull PhoneAuthProvider.ForceResendingToken token) {
                 stop_loading();
+                Intent toCodeIntent = new Intent(InputNumberActivity.this, InputCodeActivity.class);
+                toCodeIntent.putExtra(InputCodeActivity.EXTRA_VERF_ID, verification_id);
+                startActivity(toCodeIntent);
             }
         };
 

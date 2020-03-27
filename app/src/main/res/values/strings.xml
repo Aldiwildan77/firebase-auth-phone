@@ -1,8 +1,14 @@
 <resources>
     <string name="app_name">Coba Firebase</string>
     <string name="btn_input_number">submit</string>
+    <string name="btn_logout">log out</string>
     <string name="hint_enter_number">enter your phone number</string>
+    <string name="hint_enter_code">enter 6 code</string>
     <string name="err_empty_field">it cant be empty</string>
+    <string name="err_wrong_code">wrong code</string>
     <string name="tv_loading">loading</string>
-    <string name="actionbar_input_number">Verifikasi Nomor HP</string>
+    <string name="actionbar_input_number">Masukan Nomor HP</string>
+    <string name="actionbar_input_code">Masukan 6 Kode OTP</string>
+    <string name="toast_logout">You\'re Logged Out</string>
+    <string name="toast_login">Log In Success</string>
 </resources>
