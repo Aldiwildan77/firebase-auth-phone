@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".InputNumberActivity">
 
+    <TextView
+        android:id="@+id/eror"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
     <EditText
         android:id="@+id/et_input_number"
         android:layout_width="match_parent"

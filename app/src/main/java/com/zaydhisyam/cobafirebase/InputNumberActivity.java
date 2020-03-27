@@ -1,5 +1,6 @@
 package com.zaydhisyam.cobafirebase;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -16,6 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
+
+import java.util.concurrent.TimeUnit;
+
 public class InputNumberActivity extends AppCompatActivity {
 
     private EditText et_input_number;
@@ -23,11 +31,34 @@ public class InputNumberActivity extends AppCompatActivity {
     private ProgressBar progress_bar;
     private TextView tv_loading;
 
+    private FirebaseAuth firebaseAuth;
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks verifyPhoneNumber;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_number);
         set_ui();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        verifyPhoneNumber = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            @Override
+            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+                //automatically, based on providers
+                stop_loading();
+            }
+
+            @Override
+            public void onVerificationFailed(@NonNull FirebaseException e) {
+                Toast.makeText(InputNumberActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                stop_loading();
+            }
+
+            @Override
+            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                stop_loading();
+            }
+        };
 
         et_input_number.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -65,5 +96,18 @@ public class InputNumberActivity extends AppCompatActivity {
         tv_loading.setVisibility(View.VISIBLE);
 
         //process firebase auth / otp
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                number,
+                60,
+                TimeUnit.SECONDS,
+                this,
+                verifyPhoneNumber
+        );
+    }
+
+    private void stop_loading() {
+        bg_transparent.setVisibility(View.GONE);
+        progress_bar.setVisibility(View.GONE);
+        tv_loading.setVisibility(View.GONE);
     }
 }
