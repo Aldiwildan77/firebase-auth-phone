@@ -38,6 +38,8 @@ public class InputCodeActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     private String verification_id;
+    private PhoneAuthCredential auth_credential;
+    private String code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class InputCodeActivity extends AppCompatActivity {
 
         verification_id = getIntent().getStringExtra(EXTRA_VERF_ID);
 
+        //get input text
         et_input_code.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -59,12 +62,11 @@ public class InputCodeActivity extends AppCompatActivity {
                     InputMethodManager imm = (InputMethodManager) et_input_code.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(et_input_code.getWindowToken(), 0);
 
-                    //get input text
-                    String code = et_input_code.getText().toString();
+                    code = et_input_code.getText().toString();
                     if (TextUtils.isEmpty(code))
                         et_input_code.setError(getString(R.string.err_empty_field));
                     else
-                        do_sign_in(verification_id, code);
+                        do_sign_in();
                 }
             }
             @Override
@@ -81,22 +83,22 @@ public class InputCodeActivity extends AppCompatActivity {
         tv_loading = findViewById(R.id.tv_loading);
     }
 
-    private void do_sign_in(String verification_id, String code) {
+    private void do_sign_in() {
         //visible loading view
         bg_transparent.setVisibility(View.VISIBLE);
         progress_bar.setVisibility(View.VISIBLE);
         tv_loading.setVisibility(View.VISIBLE);
 
-        //make PhoneAuthCredential object
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verification_id, code);
+        //make PhoneAuthCredential object if empty
+        if (verification_id != null && code != null)
+            auth_credential = PhoneAuthProvider.getCredential(verification_id, code);
 
         //do sign in
-        firebaseAuth.signInWithCredential(credential)
+        firebaseAuth.signInWithCredential(auth_credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = task.getResult().getUser();
                             Toast.makeText(InputCodeActivity.this, R.string.toast_login, Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(InputCodeActivity.this, MainActivity.class));
                         }

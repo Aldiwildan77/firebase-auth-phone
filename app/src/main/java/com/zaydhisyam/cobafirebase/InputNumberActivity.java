@@ -17,7 +17,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
@@ -31,6 +35,7 @@ public class InputNumberActivity extends AppCompatActivity {
     private TextView tv_loading;
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks verifyPhoneNumber;
+    private FirebaseAuth firebase_auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +43,15 @@ public class InputNumberActivity extends AppCompatActivity {
         setContentView(R.layout.activity_input_number);
         set_ui();
 
+        firebase_auth = FirebaseAuth.getInstance();
+
         verifyPhoneNumber = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                //instant verification, based on providers.
+                // instant verification, based on providers.
                 // cant detect verification without user action
                 stop_loading();
+                do_sign_in(phoneAuthCredential);
             }
 
             @Override
@@ -54,10 +62,10 @@ public class InputNumberActivity extends AppCompatActivity {
 
             @Override
             public void onCodeSent(@NonNull String verification_id, @NonNull PhoneAuthProvider.ForceResendingToken token) {
-                stop_loading();
-                Intent toCodeIntent = new Intent(InputNumberActivity.this, InputCodeActivity.class);
-                toCodeIntent.putExtra(InputCodeActivity.EXTRA_VERF_ID, verification_id);
-                startActivity(toCodeIntent);
+//                stop_loading();
+//                Intent toCodeIntent = new Intent(InputNumberActivity.this, InputCodeActivity.class);
+//                toCodeIntent.putExtra(InputCodeActivity.EXTRA_VERF_ID, verification_id);
+//                startActivity(toCodeIntent);
             }
         };
 
@@ -110,5 +118,27 @@ public class InputNumberActivity extends AppCompatActivity {
         bg_transparent.setVisibility(View.GONE);
         progress_bar.setVisibility(View.GONE);
         tv_loading.setVisibility(View.GONE);
+    }
+
+    private void do_sign_in(PhoneAuthCredential credential) {
+        //visible loading view
+        bg_transparent.setVisibility(View.VISIBLE);
+        progress_bar.setVisibility(View.VISIBLE);
+        tv_loading.setVisibility(View.VISIBLE);
+
+        //do sign in
+        firebase_auth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(InputNumberActivity.this, R.string.toast_login, Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(InputNumberActivity.this, MainActivity.class));
+                        }
+                        else
+                            Toast.makeText(InputNumberActivity.this, R.string.err_wrong_code, Toast.LENGTH_SHORT).show();
+                        stop_loading();
+                    }
+                });
     }
 }
